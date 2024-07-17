@@ -8,7 +8,6 @@
 
 @attribute [Authorize(Policy = Permissions.Logs.View)]
 @inject IStringLocalizer<Logs> L
-@inject LocalTimezoneOffset LocalTimezoneOffset
 <PageTitle>@Title</PageTitle>
 
 <LogsLineCharts></LogsLineCharts>
@@ -176,7 +175,7 @@
         var state = await AuthState;
         _canPurge = (await AuthService.AuthorizeAsync(state.User, Permissions.Logs.Purge)).Succeeded;
 
-        _timezoneOffset = await LocalTimezoneOffset.Hours();
+        _timezoneOffset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).Hours;
     }
 
 
