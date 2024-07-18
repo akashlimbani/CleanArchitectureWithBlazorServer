@@ -36,8 +36,7 @@
                                    Size="Size.Small"
                                    Disabled="@_loading"
                                    OnClick="@(() => OnRefresh())"
-                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
-                                   >
+                                   StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary">
                             @ConstantString.Refresh
                         </MudButton>
                         @if (_canCreate)
@@ -89,13 +88,18 @@
                         }
                     </MudHidden>
                 </div>
+                <MudSelect T="decimal" Label="Timezone Offset" ValueChanged="OnTimezoneOffset" IconSize="Size.Small">
+                    @foreach (var value in hours)
+                    {
+                        <MudSelectItem Value="@value">@value</MudSelectItem>
+                    }
+                </MudSelect>
                 @if (_canSearch)
                 {
                     <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Value="@_searchString" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
                                   AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
                     </MudTextField>
                 }
-
             </div>
         </div>
     </ToolBarContent>
@@ -170,6 +174,8 @@
     private bool _canCreate;
     private bool _canEdit;
     private bool _canDelete;
+    List<decimal> hours = new List<decimal>() { -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+    private decimal _timezoneOffset;
 
     private TenantsWithPaginationQuery Query { get; } = new();
 
@@ -193,6 +199,7 @@
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
+            Query.TimeZoneOffset = _timezoneOffset;
             var result = await Mediator.Send(Query);
             return new GridData<TenantDto> { TotalItems = result.TotalItems, Items = result.Items };
         }
@@ -260,5 +267,11 @@
             await _table.ReloadServerData();
             _selectedItems.Clear();
         });
+    }
+
+    private async Task OnTimezoneOffset(decimal value)
+    {
+        _timezoneOffset = value;
+        await _table.ReloadServerData();
     }
 }

@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using CleanArchitecture.Blazor.Application.Features.Tenants.Caching;
@@ -8,6 +8,7 @@ namespace CleanArchitecture.Blazor.Application.Features.Tenants.Queries.Paginati
 
 public class TenantsWithPaginationQuery : PaginationFilter, ICacheableRequest<PaginatedData<TenantDto>>
 {
+    public decimal TimeZoneOffset { get; set; }
     public TenantsPaginationSpecification Specification => new(this);
     public string CacheKey => TenantCacheKey.GetPaginationCacheKey($"{this}");
     public MemoryCacheEntryOptions? Options => TenantCacheKey.MemoryCacheEntryOptions;

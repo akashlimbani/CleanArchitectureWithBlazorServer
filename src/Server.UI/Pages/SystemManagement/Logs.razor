@@ -191,7 +191,7 @@
             Query.TimeZoneOffset = _timezoneOffset;
             var result = await Mediator.Send(Query).ConfigureAwait(false);
 
-            return new GridData<LogDto> { TotalItems = result.TotalItems, Items = result.Items };
+            return new GridData<LogDto> { TotalItems = result.TotalItems, Items = SetData() };
         }
         finally
         {
@@ -242,5 +242,54 @@
                 _clearing = false;
             }
         });
+    }
+
+    private List<LogDto> SetData()
+    {
+        return new List<LogDto>
+        {
+            new LogDto
+            {
+                Id = 1,
+                Message = "Application started.",
+                MessageTemplate = "Application started at {Timestamp}.",
+                Level = "Information",
+                TimeStamp = DateTime.UtcNow.AddMinutes(-30),
+                Exception = null,
+                UserName = "admin",
+                ClientIP = "192.168.1.1",
+                ClientAgent = "Mozilla/5.0",
+                Properties = "{\"OS\": \"Windows\"}",
+                LogEvent = "ApplicationStart"
+            },
+            new LogDto
+            {
+                Id = 2,
+                Message = "User login attempt.",
+                MessageTemplate = "User {UserName} attempted to login at {Timestamp}.",
+                Level = "Warning",
+                TimeStamp = DateTime.UtcNow.AddMinutes(-20),
+                Exception = null,
+                UserName = "user1",
+                ClientIP = "192.168.1.2",
+                ClientAgent = "Mozilla/5.0",
+                Properties = "{\"Browser\": \"Firefox\"}",
+                LogEvent = "UserLogin"
+            },
+            new LogDto
+            {
+                Id = 3,
+                Message = "Unhandled exception occurred.",
+                MessageTemplate = "Exception: {Exception} at {Timestamp}.",
+                Level = "Error",
+                TimeStamp = DateTime.UtcNow.AddMinutes(-10),
+                Exception = "System.NullReferenceException: Object reference not set to an instance of an object.",
+                UserName = null,
+                ClientIP = "192.168.1.3",
+                ClientAgent = "Mozilla/5.0",
+                Properties = "{\"Module\": \"Authentication\"}",
+                LogEvent = "Exception"
+            }
+        };        
     }
 }
